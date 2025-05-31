@@ -1,0 +1,10 @@
+^C:\DEVELOPMENT\SPACE_SHOOTER\BUILD3\CMAKEFILES\E2BB8F490F4C03EB59608C538C1951BF\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Development/Space_Shooter -BC:/Development/Space_Shooter/build3 --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Development/Space_Shooter/build3/SpaceShooter.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
