@@ -329,12 +329,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Development\Space_Shooter\src\AUnit.class.cpp" />
+    <ClCompile Include="C:\Development\Space_Shooter\src\Animal.class.cpp" />
     <ClCompile Include="C:\Development\Space_Shooter\src\Background.class.cpp" />
     <ClCompile Include="C:\Development\Space_Shooter\src\Enemy.class.cpp" />
     <ClCompile Include="C:\Development\Space_Shooter\src\Fireball.class.cpp" />
-    <ClCompile Include="C:\Development\Space_Shooter\src\Meteor.class.cpp" />
     <ClCompile Include="C:\Development\Space_Shooter\src\Player.class.cpp" />
-    <ClCompile Include="C:\Development\Space_Shooter\src\Star.class.cpp" />
     <ClCompile Include="C:\Development\Space_Shooter\src\main.cpp" />
   </ItemGroup>
   <ItemGroup />

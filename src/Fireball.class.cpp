@@ -7,61 +7,65 @@
  * @Last modified time: Jul-26-2017
  */
 
-
 #include "Fireball.class.hpp"
+#include "Animal.class.hpp"
 #include "Enemy.class.hpp"
-#include "Meteor.class.hpp"
 
-Fireball::Fireball(Player* player) {
+Fireball::Fireball(Player *player)
+{
 	setWidth(FIREBALL_WIDTH);
 	setHeight(FIREBALL_HEIGHT);
 	setX(PLAYER_WIDTH / 3 + player->getX() + 1);
 	setY(player->getY());
 }
 
-Fireball::~Fireball(void) {
+Fireball::~Fireball(void)
+{
 }
 
-void	Fireball::moveDown(void) {
+void Fireball::moveDown(void)
+{
 	setY(getY() - 1);
 }
 
-bool	Fireball::contains(Enemy* enemy) {
-	int topBullet = getY();
-	int bottomBullet = getY() + FIREBALL_HEIGHT;
-	int leftBullet = getX();
-	int rightBullet = getX() + FIREBALL_WIDTH;
+bool Fireball::contains(Enemy *enemy)
+{
+	int topBullet = this->getY();
+	int bottomBullet = this->getY() + FIREBALL_HEIGHT;
+	int leftBullet = this->getX();
+	int rightBullet = this->getX() + FIREBALL_WIDTH;
 
 	int topEnemy = enemy->getY();
 	int bottomEnemy = enemy->getY() + ENEMY_HEIGHT;
 	int leftEnemy = enemy->getX();
 	int rightEnemy = enemy->getX() + ENEMY_WIDTH;
 
-	if ((	(bottomBullet <= topEnemy) ||
-			(topBullet >= bottomEnemy) ||
-			(rightBullet <= leftEnemy) ||
-			(leftBullet >= rightEnemy)) == false)
-			return true;
+	if (((bottomBullet <= topEnemy) ||
+		 (topBullet >= bottomEnemy) ||
+		 (rightBullet <= leftEnemy) ||
+		 (leftBullet >= rightEnemy)) == false)
+		return true;
 
 	return false;
 }
 
-bool	Fireball::contains(Meteor* meteor) {
-	int topBullet = getY();
-	int bottomBullet = getY() + FIREBALL_HEIGHT;
-	int leftBullet = getX();
-	int rightBullet = getX() + FIREBALL_WIDTH;
+bool Fireball::contains(Animal *animal)
+{
+	int topBullet = this->getY();
+	int bottomBullet = this->getY() + FIREBALL_HEIGHT;
+	int leftBullet = this->getX();
+	int rightBullet = this->getX() + FIREBALL_WIDTH;
 
-	int topMeteor = meteor->getY();
-	int bottomMeteor = meteor->getY() + METEOR_HEIGHT;
-	int leftMeteor = meteor->getX();
-	int rightMeteor = meteor->getX() + METEOR_WIDTH;
+	int topAnimal = animal->getY();
+	int bottomAnimal = animal->getY() + ANIMAL_HEIGHT;
+	int leftAnimal = animal->getX();
+	int rightAnimal = animal->getX() + ANIMAL_WIDTH;
 
-	if ((	(bottomBullet <= topMeteor) ||
-			(topBullet >= bottomMeteor) ||
-			(rightBullet <= leftMeteor) ||
-			(leftBullet >= rightMeteor)) == false)
-			return true;
+	if (((bottomBullet <= topAnimal) ||
+		 (topBullet >= bottomAnimal) ||
+		 (rightBullet <= leftAnimal) ||
+		 (leftBullet >= rightAnimal)) == false)
+		return true;
 
 	return false;
 }

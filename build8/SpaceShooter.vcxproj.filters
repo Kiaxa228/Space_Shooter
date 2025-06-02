@@ -4,6 +4,9 @@
     <ClCompile Include="C:\Development\Space_Shooter\src\AUnit.class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Development\Space_Shooter\src\Animal.class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Development\Space_Shooter\src\Background.class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -13,13 +16,7 @@
     <ClCompile Include="C:\Development\Space_Shooter\src\Fireball.class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Development\Space_Shooter\src\Meteor.class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="C:\Development\Space_Shooter\src\Player.class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Development\Space_Shooter\src\Star.class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\Development\Space_Shooter\src\main.cpp">

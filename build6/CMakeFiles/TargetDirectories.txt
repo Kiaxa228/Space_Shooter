@@ -1,3 +1,0 @@
-C:/Development/Space_Shooter/build6/CMakeFiles/SpaceShooter.dir
-C:/Development/Space_Shooter/build6/CMakeFiles/ALL_BUILD.dir
-C:/Development/Space_Shooter/build6/CMakeFiles/ZERO_CHECK.dir

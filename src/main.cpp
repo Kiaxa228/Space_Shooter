@@ -89,101 +89,227 @@ void close(t_settings &settings, Player &player)
 
 extern "C" int main(int ac, char *av[])
 {
-	Background background;
 	t_settings settings;
-	srand(time(0));
-
-	settings.window = NULL;
-	settings.renderer = NULL;
+	Player player;
+	Background background;
+	SDL_Event e;
+	bool quit = false;
+	unsigned long tick = 0;
 
 	if (!init(settings))
-	{
-		std::cout << "Failed to initialize!" << std::endl;
 		return 1;
-	}
 
-	Player player;
-	if (!player.load(PLAYER_IMG, settings))
-	{
-		std::cout << "Failed to load Player image: " << PLAYER_IMG << std::endl;
-		return 1;
-	}
-
-	bool quit = false;
-	SDL_Event event;
-	unsigned long ticks = 0;
 	while (!quit)
 	{
-		while (SDL_PollEvent(&event) != 0)
+		// Показываем главное меню при запуске
+		bool inMainMenu = true;
+		bool inHighScores = false;
+		while (inMainMenu && !quit)
 		{
-			if (event.type == SDL_QUIT)
-				quit = true;
-			else if (event.type == SDL_KEYDOWN)
+			// Очищаем экран
+			SDL_SetRenderDrawColor(settings.renderer, 0x00, 0x00, 0x00, 0xFF);
+			SDL_RenderClear(settings.renderer);
+
+			// Показываем главное меню или таблицу рекордов
+			if (inHighScores)
 			{
-				switch (event.key.keysym.sym)
+				background.showHighScores(settings);
+			}
+			else
+			{
+				background.showMainMenu(settings);
+			}
+			SDL_RenderPresent(settings.renderer);
+
+			// Обрабатываем события
+			while (SDL_PollEvent(&e) != 0)
+			{
+				if (e.type == SDL_QUIT)
 				{
-				case SDLK_LEFT:
-				case SDLK_a:
-					player.moveLeft();
-					break;
-				case SDLK_RIGHT:
-				case SDLK_d:
-					player.moveRight();
-					break;
-				case SDLK_UP:
-				case SDLK_w:
-					player.moveUp();
-					break;
-				case SDLK_DOWN:
-				case SDLK_s:
-					player.moveDown();
-					break;
-				case SDLK_SPACE:
-					player.shoot(settings);
-					break;
-				case SDLK_ESCAPE:
 					quit = true;
-				default:
-					break;
+				}
+				else if (e.type == SDL_MOUSEBUTTONDOWN)
+				{
+					int mouseX, mouseY;
+					SDL_GetMouseState(&mouseX, &mouseY);
+
+					if (inHighScores)
+					{
+						// Check if Back button is clicked
+						if (mouseX >= (WINDOW_WIDTH - 200) / 2 &&
+							mouseX <= (WINDOW_WIDTH + 200) / 2 &&
+							mouseY >= (WINDOW_HEIGHT - 50) / 2 + 250 &&
+							mouseY <= (WINDOW_HEIGHT + 50) / 2 + 250)
+						{
+							inHighScores = false;
+						}
+					}
+					else
+					{
+						// Check if Play button is clicked
+						if (mouseX >= (WINDOW_WIDTH - 200) / 2 &&
+							mouseX <= (WINDOW_WIDTH + 200) / 2 &&
+							mouseY >= (WINDOW_HEIGHT - 50) / 2 - 40 &&
+							mouseY <= (WINDOW_HEIGHT + 50) / 2 - 40)
+						{
+							inMainMenu = false;
+							// Загружаем игровой фон
+							if (!background.loadBackground("img/background.jpg", settings))
+							{
+								std::cout << "Failed to load background image. Returning to main menu." << std::endl;
+								inMainMenu = true;
+								continue;
+							}
+							// Загружаем изображение игрока
+							if (!player.load(PLAYER_IMG, settings))
+							{
+								std::cout << "Failed to load Player image: " << PLAYER_IMG << std::endl;
+								inMainMenu = true;
+								continue;
+							}
+						}
+						// Check if High Scores button is clicked
+						else if (mouseX >= (WINDOW_WIDTH - 200) / 2 &&
+								 mouseX <= (WINDOW_WIDTH + 200) / 2 &&
+								 mouseY >= (WINDOW_HEIGHT - 50) / 2 + 40 &&
+								 mouseY <= (WINDOW_HEIGHT + 50) / 2 + 40)
+						{
+							inHighScores = true;
+						}
+					}
+				}
+				else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					if (inHighScores)
+					{
+						inHighScores = false;
+					}
+					else
+					{
+						quit = true;
+					}
 				}
 			}
 		}
 
-		if (ticks % (STAR_HEIGHT * 5) == 0)
-			background.makeStar(settings);
-
-		if (ticks % (METEOR_HEIGHT * 20) == 0)
-			background.makeMeteor(settings);
-
-		if (ticks % (ENEMY_HEIGHT * 24) == 0)
-			background.makeEnemy(settings);
-
-		background.killEnemy(player);
-		background.killMeteor(player);
-
-		if (background.hitEnemy(player) || background.hitMeteor(player))
+		// Основной игровой цикл
+		while (!quit && !inMainMenu)
 		{
-			SDL_SetRenderDrawColor(settings.renderer, 0x61, 0x23, 0x7A, 0xFF);
+			while (SDL_PollEvent(&e) != 0)
+			{
+				if (e.type == SDL_QUIT)
+					quit = true;
+				else if (e.type == SDL_KEYDOWN)
+				{
+					switch (e.key.keysym.sym)
+					{
+					case SDLK_LEFT:
+					case SDLK_a:
+						player.moveLeft();
+						break;
+					case SDLK_RIGHT:
+					case SDLK_d:
+						player.moveRight();
+						break;
+					case SDLK_SPACE:
+						player.shoot(settings);
+						break;
+					case SDLK_ESCAPE:
+						quit = true;
+						inMainMenu = true;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+
+			if (tick >= 90000)
+			{
+				// Game over
+				bool scoreUpdated = false;
+				bool gameOver = true;
+				while (gameOver && !quit)
+				{
+					// Show game over screen with final score
+					if (!scoreUpdated)
+					{
+						background.loadGameOver(settings, player.getPoints());
+						scoreUpdated = true;
+					}
+					SDL_RenderPresent(settings.renderer);
+
+					// Handle events in game over screen
+					while (SDL_PollEvent(&e) != 0)
+					{
+						if (e.type == SDL_QUIT)
+						{
+							quit = true;
+							gameOver = false;
+						}
+						else if (e.type == SDL_MOUSEBUTTONDOWN)
+						{
+							int mouseX, mouseY;
+							SDL_GetMouseState(&mouseX, &mouseY);
+
+							// Check if click is within Main Menu button area
+							if (mouseX >= (WINDOW_WIDTH - 200) / 2 &&
+								mouseX <= (WINDOW_WIDTH + 200) / 2 &&
+								mouseY >= (WINDOW_HEIGHT - 50) / 2 + 50 &&
+								mouseY <= (WINDOW_HEIGHT + 50) / 2 + 50)
+							{
+								// Return to main menu
+								gameOver = false;
+								inMainMenu = true;
+								// Reset game state
+								tick = 0;
+								player.reset();
+								background.clean();
+								background.loadBackground("img/background.jpg", settings);
+								gameOver = false;
+							}
+							// Check if click is within Play Again button area
+							else if (mouseX >= (WINDOW_WIDTH - 200) / 2 &&
+									 mouseX <= (WINDOW_WIDTH + 200) / 2 &&
+									 mouseY >= (WINDOW_HEIGHT - 50) / 2 + 120 &&
+									 mouseY <= (WINDOW_HEIGHT + 50) / 2 + 120)
+							{
+								// Reset game state
+								tick = 0;
+								player.reset();
+								background.clean();
+								background.loadBackground("img/background.jpg", settings);
+								gameOver = false;
+							}
+						}
+						else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+						{
+							quit = true;
+							gameOver = false;
+						}
+					}
+				}
+				continue;
+			}
+
+			if (tick % (ANIMAL_HEIGHT * 20) == 0)
+				background.makeAnimal(settings);
+
+			background.killAnimal(player);
+
+			SDL_SetRenderDrawColor(settings.renderer, 0x00, 0x00, 0x00, 0xFF);
 			SDL_RenderClear(settings.renderer);
-			background.loadGameOver(GAME_OVER, settings);
+
+			background.renderBackground(settings);
+			background.displayAnimal(settings, (tick % 2 == 0));
+
+			player.render(settings);
+			player.moveBullets(settings);
+
+			background.drawInfoBox(player, settings, tick);
 			SDL_RenderPresent(settings.renderer);
-			SDL_Delay(2000);
-			break;
+			tick++;
 		}
-
-		SDL_SetRenderDrawColor(settings.renderer, 0x61, 0x23, 0x7A, 0xFF);
-		SDL_RenderClear(settings.renderer);
-
-		background.displayStar(settings);
-		background.displayMeteor(settings, (ticks % 2 == 0));
-		background.displayEnemy(settings, (ticks % (ENEMY_HEIGHT / 2) == 0));
-
-		player.render(settings);
-		player.moveBullets(settings);
-
-		background.drawInfoBox(player, settings, ticks / 100);
-		SDL_RenderPresent(settings.renderer);
-		ticks++;
 	}
 
 	close(settings, player);

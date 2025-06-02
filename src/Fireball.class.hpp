@@ -7,7 +7,6 @@
  * @Last modified time: Jul-26-2017
  */
 
-
 #ifndef FIREBALL_CLASS_HPP
 #define FIREBALL_CLASS_HPP
 
@@ -17,17 +16,19 @@
 
 class Enemy;
 class Meteor;
+class Animal;
 
-class Fireball: public AUnit {
+class Fireball : public AUnit
+{
 
 public:
-	Fireball(Player* player);
+	Fireball(Player *player);
 	~Fireball(void);
 
-	virtual void	moveDown(void);
-	bool			contains(Enemy* enemy);
-	bool			contains(Meteor* meteor);
-
+	virtual void moveDown(void);
+	bool contains(Enemy *enemy);
+	bool contains(Meteor *meteor);
+	bool contains(Animal *animal);
 };
 
 #endif

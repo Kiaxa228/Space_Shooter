@@ -7,48 +7,55 @@
  * @Last modified time: Jul-26-2017
  */
 
-#ifndef BACKGROUND_HPP
-#define BACKGROUND_HPP
+#ifndef BACKGROUND_CLASS_HPP
+#define BACKGROUND_CLASS_HPP
 
 #include "SpaceShooter.hpp"
-#include "Fireball.class.hpp"
+#include "AUnit.class.hpp"
+#include "Animal.class.hpp"
 #include "Enemy.class.hpp"
-#include "Star.class.hpp"
-#include "Meteor.class.hpp"
 #include "Player.class.hpp"
+#include <vector>
+#include <string>
+#include <utility>
 
-class Background {
-
+class Background : public AUnit
+{
 private:
-	Enemy*			_enemies[ENEMY_MAX_QUANTITY];
-	Meteor*			_meteors[METEOR_MAX_QUANTITY];
-	Star*			_stars[STAR_MAX_QUANTITY];
-	SDL_Texture*	_texture;
+	SDL_Texture *_texture;
+	TTF_Font *_font;
+	Enemy *_enemies[ENEMY_MAX_QUANTITY];
+	Animal *_animals[ANIMAL_MAX_QUANTITY];
+	int _initialX[ANIMAL_MAX_QUANTITY];
+	int _initialY[ANIMAL_MAX_QUANTITY];
+	std::vector<std::pair<std::string, int>> _highScores;
+	Player *_player;
 
 public:
 	Background(void);
 	~Background(void);
 
-	void	free(void);
-	void	clean(void);
-	void	loadGameOver(std::string, t_settings&);
-	void	drawInfoBox(Player&, t_settings&, unsigned long);
-
-	void	makeStar(t_settings&);
-	void	makeMeteor(t_settings&);
-	void	makeEnemy(t_settings&);
-
-	void	displayStar(t_settings&);
-	void	displayMeteor(t_settings&, bool);
-	void	displayEnemy(t_settings&, bool);
-
-	bool	hitEnemy(Player& player);
-	bool	hitMeteor(Player& player);
-
-	void	killEnemy(Player& player);
-	void	killMeteor(Player& player);
-
-
+	void free(void);
+	void clean(void);
+	void loadHighScores(void);
+	void saveHighScores(void);
+	void updateHighScores(int score);
+	void drawHighScores(t_settings &settings);
+	void loadGameOver(t_settings &settings, int finalScore);
+	void drawInfoBox(Player &player, t_settings &settings, unsigned long tick);
+	void makeEnemy(t_settings &settings);
+	void makeAnimal(t_settings &settings);
+	void displayEnemy(t_settings &settings);
+	void displayAnimal(t_settings &settings, bool itsTime);
+	void hitEnemy(Player *player);
+	bool hitAnimal(Player &player);
+	void killEnemy(Player *player);
+	void killAnimal(Player &player);
+	bool loadBackground(std::string, t_settings &);
+	void renderBackground(t_settings &);
+	void showMainMenu(t_settings &settings);
+	void showHighScores(t_settings &settings);
+	void moveDown(void) override;
 };
 
 #endif
